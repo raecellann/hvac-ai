@@ -1,0 +1,35 @@
+# Render Blueprint for HVAC AI.
+# Secrets are marked `sync: false` — Render asks for their values in the dashboard;
+# they are never stored in this repo.
+services:
+  - type: web
+    name: hvac-ai
+    runtime: docker
+    plan: starter            # persistent disk requires a paid instance
+    region: virginia
+    healthCheckPath: /
+    disk:
+      name: hvac-ai-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+      - key: SCOPES
+        value: read_products
+      - key: PARTS_COLLECTION_HANDLE
+        value: parts
+      - key: ANTHROPIC_MODEL
+        value: claude-sonnet-4-5
+      - key: DATABASE_URL
+        value: file:/data/prod.sqlite
+      - key: SHOPIFY_APP_URL      # e.g. https://hvac-ai.onrender.com
+        sync: false
+      - key: SHOPIFY_API_KEY      # Client ID from the Shopify Dev Dashboard
+        sync: false
+      - key: SHOPIFY_API_SECRET   # Client secret from the Shopify Dev Dashboard
+        sync: false
+      - key: ANTHROPIC_API_KEY    # from console.anthropic.com
+        sync: false
