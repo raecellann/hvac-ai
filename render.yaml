@@ -5,13 +5,9 @@ services:
   - type: web
     name: hvac-ai
     runtime: docker
-    plan: starter            # persistent disk requires a paid instance
+    plan: starter
     region: virginia
     healthCheckPath: /
-    disk:
-      name: hvac-ai-data
-      mountPath: /data
-      sizeGB: 1
     envVars:
       - key: NODE_ENV
         value: production
@@ -24,7 +20,9 @@ services:
       - key: ANTHROPIC_MODEL
         value: claude-sonnet-4-5
       - key: DATABASE_URL
-        value: file:/data/prod.sqlite
+        fromDatabase:
+          name: hvac-ai-db
+          property: connectionString
       - key: SHOPIFY_APP_URL      # e.g. https://hvac-ai.onrender.com
         sync: false
       - key: SHOPIFY_API_KEY      # Client ID from the Shopify Dev Dashboard
@@ -33,3 +31,10 @@ services:
         sync: false
       - key: ANTHROPIC_API_KEY    # from console.anthropic.com
         sync: false
+
+databases:
+  - name: hvac-ai-db
+    plan: basic-256mb
+    region: virginia
+    databaseName: hvac_ai
+    user: hvac_ai
